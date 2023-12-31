@@ -117,7 +117,7 @@ func Part1() {
 			// Blindly assigning values to the colour_values_map using the keys array for ordering
 			subset_values := strings.Split(subset, ",")
 			for j, value := range subset_values {
-				number_value, err := strconv.Atoi(strings.Replace(re.ReplaceAllString(value, ""), " ", "", -1))
+				number_value, err := strconv.Atoi(re.ReplaceAllString(value, ""))
 				util.Check(err)
 				if (j == 0) {
 					colour_values_map[first_key] = number_value
