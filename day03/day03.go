@@ -24,6 +24,7 @@ type Symbol struct {
 	value rune
 	row int
 	col int
+	ratio int
 }
 
 func isDigit(character rune) bool {
@@ -103,4 +104,83 @@ func Part1() {
 
 func Part2() {
 	fmt.Println("Part 2")
+	lines := util.ReadInput("day03/day03-input.txt")
+
+	numbers := make([]Number, 0)
+	symbols := make([]Symbol, 0)
+
+	for row, line := range lines {
+		line = strings.TrimRight(line, "\r\n")
+		line += "."
+		fmt.Println("Line:", line)
+
+		number := Number{value: 0, row: row}
+		tempNumber := ""
+		for col, char := range line {
+			fmt.Printf("%c", char)
+			fmt.Printf(" (%d,%d)", row, col)
+			fmt.Println()
+		
+			if isDigit(char) {
+				number.col = append(number.col, col)
+				tempNumber += string(char)
+			} else {
+				if len(tempNumber) > 0 {
+					value, err := strconv.Atoi(tempNumber)
+					util.Check(err)
+					tempNumber = ""
+
+					number.value = value
+					fmt.Println("Number:", number)
+					numbers = append(numbers, number)
+					number = Number{value: 0, row: row}
+				}
+				if isSymbol(char) {
+					symbol := Symbol{value: char, row: row, col: col, ratio: 0}
+					fmt.Println("Symbol:", symbol)
+					symbols = append(symbols, symbol)
+				}
+			}
+		}
+		fmt.Println()
+	}
+
+	gearRatioSum := 0
+	for _, symbol := range symbols {
+		fmt.Println("Symbol:", symbol)
+		if symbol.value == '*' {
+			fmt.Println("Entered")
+			numbersEncountered := 0
+			for _, number := range numbers {
+				for _, index := range number.col {
+					if symbol.row == number.row - 1 || symbol.row == number.row || symbol.row == number.row + 1 {
+						if symbol.col == index -1 || symbol.col == index || symbol.col == index + 1 {
+							if symbol.ratio == 0 && numbersEncountered <= 1 {
+								numbersEncountered += 1
+								fmt.Println("Number Value:", number.value)
+								symbol.ratio = number.value
+								fmt.Println("symbol.ratio:", symbol.ratio)
+								break
+							} else if numbersEncountered <= 1{
+								numbersEncountered += 1
+								fmt.Println("Number Value 2:", number.value)
+								symbol.ratio = symbol.ratio * number.value
+								fmt.Println("symbol.ratio 2:", symbol.ratio)
+								break
+							} else {
+								break
+							}
+						}
+					}
+				}
+			}
+			if numbersEncountered == 2 {
+				gearRatioSum += symbol.ratio
+			} else {
+				symbol.ratio = 0
+			}
+		}
+	}
+
+	fmt.Println("Gear Ratio Sum:", gearRatioSum)
 }
