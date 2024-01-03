@@ -16,38 +16,7 @@ type card struct {
 	instances int
 }
 
-func collectCards(lines []string) []card {
-	cards := make([]card, 0)
-
-	for _, line := range lines {
-		line = strings.ToLower(line)
-		temp := strings.Split(line, ": ")
-		
-		rawCardNumber := strings.ReplaceAll(temp[0], " ", "")
-		rawCardNumber = strings.TrimLeft(rawCardNumber, "card")
-
-		cardNumber, err := strconv.Atoi(rawCardNumber)
-		util.Check(err)
-
-		fmt.Println(cardNumber)
-
-		numbers := strings.Split(temp[1], " | ")
-
-		winning := sanitizeNumber(numbers[0])
-
-		owned := sanitizeNumber(numbers[1])
-
-		winningNumbers := collectWinningNumbers(winning, owned)
-
-		card := card{number: cardNumber, winningNumbers: winningNumbers}
-
-		cards = append(cards, card)
-	}
-
-	return cards
-}
-
-func sanitizeNumber(numbers string) []int {
+func sanitiseNumbers(numbers string) []int {
 	numbers = strings.TrimRight(numbers, "\r\n ")
 	numbers = strings.TrimLeft(numbers, " ")
 
@@ -77,6 +46,37 @@ func collectWinningNumbers(winning []int, owned []int) []int {
 	return winningNumbers
 }
 
+func collectCards(lines []string) []card {
+	cards := make([]card, 0)
+
+	for _, line := range lines {
+		line = strings.ToLower(line)
+		temp := strings.Split(line, ": ")
+		
+		rawCardNumber := strings.ReplaceAll(temp[0], " ", "")
+		rawCardNumber = strings.TrimLeft(rawCardNumber, "card")
+
+		cardNumber, err := strconv.Atoi(rawCardNumber)
+		util.Check(err)
+
+		fmt.Println(cardNumber)
+
+		numbers := strings.Split(temp[1], " | ")
+
+		winning := sanitiseNumbers(numbers[0])
+
+		owned := sanitiseNumbers(numbers[1])
+
+		winningNumbers := collectWinningNumbers(winning, owned)
+
+		card := card{number: cardNumber, winningNumbers: winningNumbers}
+
+		cards = append(cards, card)
+	}
+
+	return cards
+}
+
 func Part1() {
 	fmt.Println("Part 1")
 	lines := util.ReadInput("day04/day04-input.txt")
@@ -95,10 +95,6 @@ func Part1() {
 		}
 	}
 	fmt.Println("Points:", points)
-}
-
-func recursiveCheck() {
-	recursiveCheck()
 }
 
 func cardsToMap(cards []card) map[int]card {
