@@ -13,6 +13,7 @@ import (
 type card struct {
 	number int
 	winningNumbers []int
+	instances int
 }
 
 func collectCards(lines []string) []card {
@@ -96,6 +97,50 @@ func Part1() {
 	fmt.Println("Points:", points)
 }
 
+func recursiveCheck() {
+	recursiveCheck()
+}
+
+func cardsToMap(cards []card) map[int]card {
+	cardsMap := make(map[int]card)
+
+	for _, card := range cards {
+		card.instances = 1
+		cardsMap[card.number] = card
+	}
+
+	return cardsMap
+}
+
 func Part2() {
 	fmt.Println("Part 2")
+	lines := util.ReadInput("day04/day04-input.txt")
+
+	cards := collectCards(lines)
+
+	cardsMap := cardsToMap(cards)
+
+	for i := 1; i <= len(cardsMap); i++ {
+
+		winningNumbersCount := len(cardsMap[i].winningNumbers)
+		fmt.Println("Card Number:", i)
+		fmt.Println("Winning Numbers Count:", winningNumbersCount)
+		if winningNumbersCount >= 1 {
+			for j := 1; j <= winningNumbersCount; j++ {
+				if len(cardsMap) >= i + j {
+					wonCard := cardsMap[i + j]
+					wonCard.instances += 1 * cardsMap[i].instances
+					cardsMap[i + j] = wonCard
+				}
+			}
+		}
+
+		fmt.Println("Cards Map", cardsMap[i])
+	}
+
+	total := 0
+	for _, card := range cardsMap {
+		total += card.instances
+	}
+	fmt.Println("Total Scratchcards:", total)
 }
